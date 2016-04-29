@@ -16,10 +16,9 @@ String curr = new String();
  
 // System data
 boolean dosave=false;
-int num;
-float pt[];
-int style[];
-
+int num=1;
+float pt[]; // locations rotations etc ?
+int style[]; // colors and lines
  
 void setup() {
   size(1024, 768, P3D);
@@ -32,8 +31,9 @@ void setup() {
     sinLUT[i]= (float)Math.sin(i*DEG_TO_RAD*SINCOS_PRECISION);
     cosLUT[i]= (float)Math.cos(i*DEG_TO_RAD*SINCOS_PRECISION);
   }
- 
+  
   num = 150;
+ 
   pt = new float[6*num]; // rotx, roty, deg, rad, w, speed
   style = new int[2*num]; // color, render style
  
@@ -67,6 +67,8 @@ void setup() {
 
     style[i*2+1]=(int)(random(100))%3;
   }
+  
+  num = 0;
 }
  
 void draw() {
@@ -77,6 +79,22 @@ void draw() {
   translate(width/2, height/2, 0);
   rotateX(PI/6);
   rotateY(PI/6);
+  
+  if(num >= 150) { //remove first shape, add new one
+     int len = pt.length;
+     float pttemp[] = new float[len + 1];
+     for(int i = 6; i < len; i++) {
+       pttemp[i-6] = pt[i];
+     }
+     pt = pttemp;
+     len = style.length;
+     int styletemp[] = new int[len + 1];
+     for(int i = 2; i < len; i++) {
+       styletemp[i-2] = style[i];
+     }
+     style = styletemp;
+     num = 149;
+  }
  
   for (int i = 0; i < num; i++) {
     pushMatrix();
@@ -162,7 +180,7 @@ void arc(float x,float y,float deg,float rad,float w) {
 
 void keyPressed(){
   if (key == ENTER) {
-    num = curr.length()%150;
+    num++;
     curr = "";
   }
   else if (key == BACKSPACE && curr.length() > 0 ){
